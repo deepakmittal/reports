@@ -247,7 +247,7 @@ public class ReportsController {
 }
 ```
 
-# Implementation of abstract class Report
+### Implementation of abstract class 'Report'
 ```java
 package report;
 import java.util.List;
