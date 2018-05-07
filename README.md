@@ -34,122 +34,182 @@ Clone/download source and build and boot using mavan
 
 ```
 mvn clean dependency:tree
+```
+Run tests
+```
+mvn test
+```
+Run application
+```
 mvn spring-boot:run
 ```
 
 Open browser and go to url,
 http://localhost:8080/reports
 
+##
+  
 
 ## setting up your own report
-* create your report class that extends 'Report' abstract class.
-* create your Row class that implements 'Row' representing a row in data.
-* create your Filter class that implements 'Filter' interface.
-* create your Response class that impletent 'Response' interface.
-
+* create your row class that implements 'Row' interface, representing a row in data. Row represents a row of your data. This is core model of application. You need to specify dimension or key of your row by method prepareDimensionsKey 
 ```java
-package report;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-public class GroceryStore extends Report{
-
-	@Override
-	protected List<Row> prepareData() {
-		List<Row> data = new ArrayList<Row>();
-		data.add(new TestRow("apple", "fruit",20.5f, 2));
-		data.add(new TestRow("banana", "fruit",10.5f, 5));
-		data.add(new TestRow("potato", "vegitable",15.2f, 5));
-		return data;	
-	}
-
-	@Override
-	protected Response prepareEmptyResponse(Filter f) {
-		TestFilter filter = (TestFilter) f;
-		TestResponse response = new TestResponse();
-		response.name= filter.name;
-		response.type = filter.type;
-		return response;
-	}
-	
-	public Filter getFilter(String name, String type) {
-		return new TestFilter(name, type);
-	}
-
-}
-class TestRow implements Row{
-	String name;
-	String type;
-	float price;
-	int quantity;
+class AdExchangeDataRow implements Row{
+	private String month;
+	private String year;
+	private String site;
+	private int requests;
+	private int impressions;
+	private int clicks;
+	private int conversions;
+	private float revenue;
 	
 	@Override
 	public String prepareDimensionsKey() {
-		return name + "-" + type;
-	}
-
-	public TestRow(String dimension1, String dimension2, float metric1, int metric2) {
-		super();
-		this.name = dimension1;
-		this.type = dimension2;
-		this.price = metric1;
-		this.quantity = metric2;
+			return year+"-"+month+"-"+site;
 	}
 	
+  // ...... Setters and getters
 }
-class TestFilter implements Filter{
-	String name;
-	String type;
+```
+* create your Filter class that implements 'Filter' interface. Filter contails parameters on basis of which you want to filter data. Here you define if a Row is filtered in or filtered out by implementing method filterIn.
+
+```java
+ public class AdExchangeDataFilter implements Filter{
+	private String month;
+	private String year;
+	private String site;
+	
 	@Override
-	public boolean filterIn(Row row) {
-		TestRow r = (TestRow) row;
-		if( 
-				(name == null || name == r.name)
-				&&(type == null || type == r.type)
+	public boolean filterIn(Row r) {
+		AdExchangeDataRow row = (AdExchangeDataRow) r;
+		if(
+				(this.month == null || row.getMonth().equals(this.month))
+				&&(this.year == null || row.getYear().equals(this.year))
+				&&(this.site == null || row.getSite().equals(this.site))
 				)
 			return true;
 		return false;
 	}
-	public TestFilter(String dimension1, String dimension2) {
-		super();
-		this.name = dimension1;
-		this.type = dimension2;
-	}	
-}
+}	
+```
 
+* create your Response class that impletent 'Response' interface.
+```
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class TestResponse implements Response{
-	// marking public just for test. do write getters.
-	public String name; 
-	public String type;
-	public float price;
-	public int quantity;
-	public float averagePricePerItem;
+class AdExchangeResponse implements Response{
+	private String month;
+	private String year;
+	private String site;
+	private int requests;
+	private int impressions;
+	private int clicks;
+	private int conversions;
+	private float revenue;
+	private float CTR;
+	private float CR;
+	private float fill_rate;
+	private float eCPM;
+	
+	/**
+	 * Add metrics of data row to response.
+	 */
 	@Override
-	public void addMetrics(Row row) {
-		TestRow r = (TestRow) row;
-		price += r.price;
-		quantity += r.quantity;
+	public void addMetrics(Row r) {
+		AdExchangeDataRow row = (AdExchangeDataRow) r;
+		this.requests += row.getRequests();
+		this.impressions += row.getImpressions();
+		this.clicks += row.getClicks();
+		this.conversions += row.getConversions();
+		this.revenue += row.getRevenue();
 	}
-	@Override
-	public void setFilterValues(Filter f) {
-		TestFilter filter = (TestFilter) f;
-		name = filter.name;
-		type = filter.type;
-	}
+	
 	@Override
 	public void setDerivedMetrics() {
-		averagePricePerItem = quantity==0 ? 0 :price/quantity;		
+		if(requests !=0) {
+			this.fill_rate = (float)this.impressions*100/this.requests;
+		}
+		if(impressions !=0) {
+			this.CR = (float)this.conversions*100/this.impressions;
+			this.CTR = (float)this.clicks*100/this.impressions;
+			this.eCPM = this.revenue*1000/this.impressions;
+		}
+	}
+// .....setters and getters
+}
+```
+* create your report class extending 'Report' abstract class. You need to implement prepareData() and prepareEmptyResponse() methods.
+
+```java
+public class AdExchangeReport extends Report{
+	public static final String DATA_PATH = "ad-exchange";
+	
+	@Override
+	protected List<Row> prepareData() {
+		List<Row> data = new ArrayList<Row>();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File directory = new File(classLoader.getResource(DATA_PATH).getPath());
+		for(File file: directory.listFiles()) {
+			String year = file.getName().substring(0, 4);
+			String month = Month.toProperMonthString(file.getName().substring(5, 7));
+			if(!file.getName().contains(".csv"))
+				continue;
+			CsvReader csvReader = new CsvReader(file);
+			String[][] csvData = csvReader.parse();
+			for(String[] line: csvData) {
+				Row row = getRow(line, year, month);
+				if(row !=null)data.add(row);
+			}
+		}
+		return data;
+	}
+	
+	/**
+	 * prepare 1 row of data from csv line, and year and month parsed from file's name
+	 * @param line
+	 * @param year
+	 * @param month
+	 * @return
+	 */
+	private AdExchangeDataRow getRow(String[] line, String year, String month) {
+		AdExchangeDataRow row = new AdExchangeDataRow();
+		if(line[0].trim().equals("site") || line.length < 6)
+			return null;
+		row.setSite(line[0].trim());
+		row.setYear(year);
+		row.setMonth(month);
+		row.setRequests(Integer.parseInt(line[1].trim()));
+		row.setImpressions(Integer.parseInt(line[2].trim()));
+		row.setClicks(Integer.parseInt(line[3].trim()));
+		row.setConversions(Integer.parseInt(line[4].trim()));
+		row.setRevenue(Float.parseFloat(line[5].trim()));
+		return row;
+	}
+	
+	/**
+	 * Creates empty response
+	 */
+	@Override
+	protected Response prepareEmptyResponse(Filter f) {
+		AdExchangeDataFilter filter = (AdExchangeDataFilter) f; 
+		AdExchangeResponse response = new AdExchangeResponse();
+		response.setYear(filter.getYear());
+		response.setMonth(filter.getMonth());
+		response.setSite(filter.getSite());
+		return response;
 	}
 	
 }
-
+```
+* once this is ready, use fetchData() method to get your reports
+```java
+adExchangeReport = new AdExchangeReport();
+adExchangeReport.init();
+AdExchangeDataFilter filter = new AdExchangeDataFilter(month, year, site);
+Response response = adExchangeReport.fetchData(filter);
+		
 ```
 
-* when your reports are ready expose them wring spring rest controller.
+* You can expose reports using REST API
 
 ```java
 package api;
