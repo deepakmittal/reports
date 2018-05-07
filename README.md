@@ -7,13 +7,13 @@ This exposes following 4 componets,
 * interface Filter
 
 Extending/implementing these components you can create your own report. Following reports are already implemented in this library,
-* ###Ad Exchange report.
+* Ad Exchange report.
   Report on monthly data of an ad exchange. example:
   ..* All aggregated data: http://localhost:8080/reports
   ..* For month January, 2018: http://localhost:8080/reports?year=2018&month=jan
   ..* For site=android: http://localhost:8080/reports?site=android
 
-* ###Calories Tracker. 
+* Calories Tracker. 
 Api to keep track of your calories intake.
 ..* Add breakfast: http://localhost:8080/caloriesTracker/add?date=2018-05-03&type=breakfast&calories=200
 ..* Add dinner: http://localhost:8080/caloriesTracker/add?date=2018-05-03&type=dinner&calories=400
