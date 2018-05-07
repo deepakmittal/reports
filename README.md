@@ -1,5 +1,24 @@
 ## reports
-Library for creating reports and exposing them through REST Api
+Library for creating reports and exposing them through REST Api.
+This exposes following 4 componets,
+* abstract class Report
+* interface Row
+* interface Response
+* interface Filter
+
+Extending/implementing these components you can create your own report. Following reports are already implemented in this library,
+* ###Ad Exchange report.
+  Report on monthly data of an ad exchange. example:
+  ..* All aggregated data: http://localhost:8080/reports
+  ..* For month January, 2018: http://localhost:8080/reports?year=2018&month=jan
+  ..* For site=android: http://localhost:8080/reports?site=android
+
+* ###Calories Tracker. 
+Api to keep track of your calories intake.
+..* Add breakfast: http://localhost:8080/caloriesTracker/add?date=2018-05-03&type=breakfast&calories=200
+..* Add dinner: http://localhost:8080/caloriesTracker/add?date=2018-05-03&type=dinner&calories=400
+..* Track calories: http://localhost:8080/caloriesTracker/track?date=2018-05-03
+
 
 ## setup
 
