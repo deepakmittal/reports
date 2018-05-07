@@ -27,7 +27,6 @@ public class ReportsControllerTest {
         this.mockMvc.perform(get("/reports"))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("conversions")))
-            .andDo(document("reports"))
             ;
     }
 }
