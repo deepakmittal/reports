@@ -19,10 +19,10 @@ http://localhost:8080/reports
 
 
 ## setting up your own report
-⋅⋅* create your report class that extends 'Report' abstract class.
-..* create your Row class that implements 'Row' representing a row in data.
-..* create your Filter class that implements 'Filter' interface.
-..* create your Response class that impletent 'Response' interface.
+* create your report class that extends 'Report' abstract class.
+* create your Row class that implements 'Row' representing a row in data.
+* create your Filter class that implements 'Filter' interface.
+* create your Response class that impletent 'Response' interface.
 
 ```java
 public class CaloriesTracker extends Report{
@@ -104,6 +104,52 @@ class MealFilter implements Filter{
 				)
 				return true;
 		return false;
+	}
+}
+```
+
+* when your reports are ready expose them wring spring rest controller.
+
+```java
+package api;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import adExchangeReport.AdExchangeReport;
+import caloriesTracker.CaloriesTracker;
+import report.Filter;
+import report.Response;
+import adExchangeReport.AdExchangeDataFilter;
+import util.Month;
+
+@RestController
+@RequestMapping(value = "/caloriesTracker", method = RequestMethod.GET)
+public class CaloriesTrackerController {
+	static CaloriesTracker tracker;
+	
+	static {
+		tracker = new CaloriesTracker();
+		tracker.init();
+	}
+	
+	@RequestMapping(value = "/add", method = RequestMethod.GET)
+	public void addMeal(
+			@RequestParam(required = false, value = "date") String date,
+			@RequestParam(required = false, value = "type") String type,
+			@RequestParam(required = false, value = "calories") float calories
+			) {
+		tracker.addMeal(date, type, calories);
+	}
+	
+	@RequestMapping(value = "/track", method = RequestMethod.GET)
+	public Response track(
+			@RequestParam(required = false, value = "date") String date,
+			@RequestParam(required = false, value = "type") String type
+			) {
+		Filter filter = tracker.getFilter(date, type);
+		return tracker.fetchData(filter);
 	}
 }
 ```
