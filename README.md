@@ -47,7 +47,10 @@ mvn spring-boot:run
 Open browser and go to url,
 http://localhost:8080/reports
 
-##
+## Dataflow
+
+Data flows form files to in-memory objects. On a report request selected data is filtered in, response in built and sent.
+![dataflow](dataflow.png)
   
 
 ## setting up your own report
