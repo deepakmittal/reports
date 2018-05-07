@@ -217,40 +217,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import adExchangeReport.AdExchangeReport;
-import caloriesTracker.CaloriesTracker;
-import report.Filter;
 import report.Response;
 import adExchangeReport.AdExchangeDataFilter;
 import util.Month;
 
 @RestController
-@RequestMapping(value = "/caloriesTracker", method = RequestMethod.GET)
-public class CaloriesTrackerController {
-	static CaloriesTracker tracker;
+public class ReportsController {
+	static AdExchangeReport adExchangeReport;
 	
 	static {
-		tracker = new CaloriesTracker();
-		tracker.init();
+		adExchangeReport = new AdExchangeReport();
+		adExchangeReport.init();
 	}
 	
-	@RequestMapping(value = "/add", method = RequestMethod.GET)
-	public void addMeal(
-			@RequestParam(required = false, value = "date") String date,
-			@RequestParam(required = false, value = "type") String type,
-			@RequestParam(required = false, value = "calories") float calories
+	@RequestMapping(value = "/reports", method = RequestMethod.GET)
+	public Response  getReport(
+			@RequestParam(required = false, value = "site") String site,
+			@RequestParam(required = false, value = "year") String year,
+			@RequestParam(required = false, value = "month") String month
 			) {
-		tracker.addMeal(date, type, calories);
-	}
-	
-	@RequestMapping(value = "/track", method = RequestMethod.GET)
-	public Response track(
-			@RequestParam(required = false, value = "date") String date,
-			@RequestParam(required = false, value = "type") String type
-			) {
-		Filter filter = tracker.getFilter(date, type);
-		return tracker.fetchData(filter);
+		month = Month.toProperMonthString(month);
+		AdExchangeDataFilter filter = new AdExchangeDataFilter(month, year, site);
+		return adExchangeReport.fetchData(filter);
 	}
 }
 ```
