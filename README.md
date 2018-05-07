@@ -51,7 +51,7 @@ http://localhost:8080/reports
   
 
 ## setting up your own report
-* create your row class that implements 'Row' interface, representing a row in data. Row represents a row of your data. This is core model of application. You need to specify dimension or key of your row by method prepareDimensionsKey 
+* create your row class that implements 'Row' interface, representing a row in data. This is core model of application. You need to specify dimension or primary key of your data by method prepareDimensionsKey 
 ```java
 class AdExchangeDataRow implements Row{
 	private String month;
@@ -71,7 +71,7 @@ class AdExchangeDataRow implements Row{
   // ...... Setters and getters
 }
 ```
-* create your Filter class that implements 'Filter' interface. Filter contails parameters on basis of which you want to filter data. Here you define if a Row is filtered in or filtered out by implementing method filterIn.
+* create your Filter class that implements 'Filter' interface. Filter contains parameters on basis of which you want to filter data. Here you define if a Row is filtered in or filtered out by implementing method filterIn().
 
 ```java
  public class AdExchangeDataFilter implements Filter{
@@ -93,7 +93,7 @@ class AdExchangeDataRow implements Row{
 }	
 ```
 
-* create your Response class that impletent 'Response' interface.
+* create your Response class that impletent 'Response' interface. It needs to to implement setDerivedMetrics() and addMetrics(Row) methods. You specify how to aggregate data in addMetrics() method, and derived metrics calculation in setDerivedMetrics() method.
 ```
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class AdExchangeResponse implements Response{
