@@ -94,7 +94,7 @@ class AdExchangeDataRow implements Row{
 ```
 
 * create your Response class that impletent 'Response' interface. It needs to to implement setDerivedMetrics() and addMetrics(Row) methods. You specify how to aggregate data in addMetrics() method, and derived metrics calculation in setDerivedMetrics() method.
-```
+```java
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class AdExchangeResponse implements Response{
 	private String month;
