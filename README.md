@@ -12,7 +12,7 @@ Extending/implementing these components you can create your own report. Followin
 	* All aggregated data: http://localhost:8080/reports
 	  ```{"requests":68823820,"impressions":64422713,"clicks":184724,"conversions":39477,"revenue":128351.91,"fill_rate":93.6,"eCPM":1.99,"ctr":0.28,"cr":0.06}```
 	  
-	* For month January, 2018: http://localhost:8080/reports?year=2018&month=feb
+	* For month February, 2018: http://localhost:8080/reports?year=2018&month=feb
 	```{"month":"February","year":"2018","requests":33969832,"impressions":31322712,"clicks":97742,"conversions":18071,"revenue":62940.15,"fill_rate":92.2,"eCPM":2.0,"ctr":0.31,"cr":0.05}```
 	
 	* For site=android: http://localhost:8080/reports?site=android ```{"site":"android","requests":18835321,"impressions":17755397,"clicks":47329,"conversions":11365,"revenue":35320.53,"fill_rate":94.26,"eCPM":1.98,"ctr":0.26,"cr":0.06}```
