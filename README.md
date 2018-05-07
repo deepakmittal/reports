@@ -10,8 +10,11 @@ Extending/implementing these components you can create your own report. Followin
 * Ad Exchange report.
   Report on monthly data of an ad exchange. example:
 	* All aggregated data: http://localhost:8080/reports
-	* For month January, 2018: http://localhost:8080/reports?year=2018&month=jan
-	* For site=android: http://localhost:8080/reports?site=android
+	  ```{"requests":33969832,"impressions":31322712,"clicks":97742,"conversions":18071,"revenue":62940.15,"fill_rate":92.2,"eCPM":2.0,"ctr":0.31,"cr":0.05}```
+	  
+	* For month January, 2018: http://localhost:8080/reports?year=2018&month=feb```{"month":"February","year":"2018","requests":33969832,"impressions":31322712,"clicks":97742,"conversions":18071,"revenue":62940.15,"fill_rate":92.2,"eCPM":2.0,"ctr":0.31,"cr":0.05}``
+	
+	* For site=android: http://localhost:8080/reports?site=android ```{"site":"android","requests":8921215,"impressions":8342439,"clicks":22934,"conversions":5347,"revenue":17210.11,"fill_rate":93.51,"eCPM":2.06,"ctr":0.27,"cr":0.06}```
 
 * Calories Tracker. 
 	Api to keep track of your calories intake.
