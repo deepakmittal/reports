@@ -21,7 +21,6 @@ public abstract class Report {
 	 */
 	public Response fetchData(Filter filter) {
 		Response response = this.prepareEmptyResponse(filter);
-		response.setFilterValues(filter);
 		for(Row row: this.getData()) {
 			if(filter.filterIn(row)) {
 				response.addMetrics(row);

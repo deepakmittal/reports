@@ -16,7 +16,8 @@ import report.Row;
 	private int clicks;
 	private int conversions;
 	private float revenue;
-
+	
+	@Override
 	public String prepareDimensionsKey() {
 			return year+"-"+month+"-"+site;
 	}

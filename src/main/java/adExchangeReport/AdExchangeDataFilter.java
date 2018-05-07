@@ -12,6 +12,8 @@ import report.Row;
 	private String month;
 	private String year;
 	private String site;
+	
+	@Override
 	public boolean filterIn(Row r) {
 		AdExchangeDataRow row = (AdExchangeDataRow) r;
 		if(
@@ -22,6 +24,7 @@ import report.Row;
 			return true;
 		return false;
 	}
+	
 	public AdExchangeDataFilter(String month, String year, String site) {
 		this.month = month;
 		this.year = year;

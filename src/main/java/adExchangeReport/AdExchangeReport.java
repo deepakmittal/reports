@@ -25,7 +25,7 @@ public class AdExchangeReport extends Report{
 	protected List<Row> prepareData() {
 		List<Row> data = new ArrayList<Row>();
 		ClassLoader classLoader = getClass().getClassLoader();
-		File directory = new File(classLoader.getResource(DATA_PATH).getFile());
+		File directory = new File(classLoader.getResource(DATA_PATH).getPath());
 		for(File file: directory.listFiles()) {
 			String year = file.getName().substring(0, 4);
 			String month = Month.toProperMonthString(file.getName().substring(5, 7));
@@ -37,17 +37,8 @@ public class AdExchangeReport extends Report{
 				Row row = getRow(line, year, month);
 				if(row !=null)data.add(row);
 			}
-			return data;
 		}
-		return null;
-	}
-	
-	/**
-	 * Creates empty response
-	 */
-	@Override
-	protected Response prepareEmptyResponse(Filter f) {
-		return new AdExchangeResponse();
+		return data;
 	}
 	
 	/**
@@ -71,6 +62,20 @@ public class AdExchangeReport extends Report{
 		row.setRevenue(Float.parseFloat(line[5].trim()));
 		return row;
 	}
+	
+	/**
+	 * Creates empty response
+	 */
+	@Override
+	protected Response prepareEmptyResponse(Filter f) {
+		AdExchangeDataFilter filter = (AdExchangeDataFilter) f; 
+		AdExchangeResponse response = new AdExchangeResponse();
+		response.setYear(filter.getYear());
+		response.setMonth(filter.getMonth());
+		response.setSite(filter.getSite());
+		return response;
+	}
+	
 	
 	/**
 	 * Used only for testing

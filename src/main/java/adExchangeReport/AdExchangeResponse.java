@@ -29,6 +29,7 @@ class AdExchangeResponse implements Response{
 	/**
 	 * Add metrics of data row to response.
 	 */
+	@Override
 	public void addMetrics(Row r) {
 		AdExchangeDataRow row = (AdExchangeDataRow) r;
 		this.requests += row.getRequests();
@@ -38,12 +39,7 @@ class AdExchangeResponse implements Response{
 		this.revenue += row.getRevenue();
 	}
 	
-	public void setFilterValues(Filter f) {
-		AdExchangeDataFilter filter = (AdExchangeDataFilter) f;
-		this.site = filter.getSite();
-		this.month = filter.getMonth();
-		this.year = filter.getYear();	
-	}
+	@Override
 	public void setDerivedMetrics() {
 		if(requests !=0) {
 			this.fill_rate = (float)this.impressions*100/this.requests;

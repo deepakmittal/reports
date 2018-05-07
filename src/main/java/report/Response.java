@@ -6,7 +6,6 @@ package report;
  *
  */
 public interface Response {
-	 void addMetrics(Row r);
-	 void setFilterValues(Filter f); 
+	 void addMetrics(Row r); 
 	 void setDerivedMetrics();
 }
